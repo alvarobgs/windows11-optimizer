@@ -166,7 +166,15 @@ call :appx Microsoft.People "Pessoas"
 call :appx Microsoft.SkypeApp "Skype"
 call :appx Clipchamp.Clipchamp "Clipchamp"
 call :appx Microsoft.Getstarted "Primeiros Passos"
-call :appx MicrosoftTeams "Teams consumer"
+call :appx MicrosoftTeams "Teams consumer (legado)"
+call :appx MSTeams "Microsoft Teams"
+call :appx Microsoft.Todos "Microsoft To Do"
+call :appx 7EE7776C.LinkedInforWindows "LinkedIn"
+call :appx 5319275A.WhatsAppDesktop "WhatsApp"
+call :appx Microsoft.BingSearch "Pesquisa do Microsoft Bing"
+call :appx Microsoft.MicrosoftStickyNotes "Notas Autoadesivas"
+call :appx Microsoft.WindowsFeedbackHub "Hub de Comentarios"
+call :appx Microsoft.ZuneMusic "Reprodutor Multimidia"
 call :appx Microsoft.OutlookForWindows "Novo Outlook"
 call :appx Microsoft.MicrosoftOfficeHub "Office Hub"
 call :appx Microsoft.Xbox.TCUI "Xbox TCUI"
@@ -174,6 +182,7 @@ call :appx Microsoft.XboxApp "Xbox App"
 call :appx Microsoft.XboxGameOverlay "Xbox Game Overlay"
 call :appx Microsoft.XboxGamingOverlay "Xbox Game Bar"
 call :appx Microsoft.XboxIdentityProvider "Xbox Identity Provider"
+call :onedrive
 call :reg "HKCU\Software\Microsoft\Windows\CurrentVersion\GameDVR" AppCaptureEnabled REG_DWORD 0
 call :reg "HKLM\SOFTWARE\Policies\Microsoft\Windows\GameDVR" AllowGameDVR REG_DWORD 0
 call :endstep "Xbox Game DVR"
@@ -486,6 +495,24 @@ echo  %~2 ... nao instalado, ignorado
 exit /b 0
 :appx_fail
 echo  %~2 ... FALHOU
+>>"%LOG%" echo   -^> FALHOU
+set "actionFailed=1"
+exit /b 0
+
+:onedrive
+>>"%LOG%" echo [OneDrive] Aplicativo de sincronizacao
+powershell -NoProfile -Command "$ErrorActionPreference='Stop'; $paths=@(($env:SystemRoot+'\SysWOW64\OneDriveSetup.exe'), ($env:SystemRoot+'\System32\OneDriveSetup.exe'), ($env:LOCALAPPDATA+'\Microsoft\OneDrive\Update\OneDriveSetup.exe'), ($env:LOCALAPPDATA+'\Microsoft\OneDrive\OneDriveSetup.exe')); $setup=$paths | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1; if (-not $setup) { exit 2 }; $p=Start-Process -FilePath $setup -ArgumentList '/uninstall' -Wait -PassThru; exit $p.ExitCode" >>"%LOG%" 2>&1
+if errorlevel 2 goto :onedrive_missing
+if errorlevel 1 goto :onedrive_fail
+echo  OneDrive (aplicativo; arquivos mantidos) ... removido
+>>"%LOG%" echo   -^> removido
+exit /b 0
+:onedrive_missing
+echo  OneDrive ... instalador nao encontrado, ignorado
+>>"%LOG%" echo   -^> instalador nao encontrado, ignorado
+exit /b 0
+:onedrive_fail
+echo  OneDrive ... FALHOU
 >>"%LOG%" echo   -^> FALHOU
 set "actionFailed=1"
 exit /b 0

@@ -46,7 +46,7 @@ Observacoes:
 | 1 | Cria um ponto de restauracao do sistema (contorna o limite de 1 por 24 horas). |
 | 2 | Desativa servicos: DiagTrack, dmwappushsvc, SysMain, Xbox (XblAuthManager, XblGameSave, XboxNetApiSvc, XboxGipSvc), Fax, WerSvc, RemoteRegistry e lfsvc (localizacao). |
 | 3 | Reduz telemetria (politica `AllowTelemetry`), ID de publicidade, experiencias personalizadas, historico de atividades e notificacoes de feedback. Desativa tarefas agendadas do Compatibility Appraiser, ProgramDataUpdater e CEIP. |
-| 4 | Remove apps pre-instalados (veja a lista abaixo) e desativa o Xbox Game DVR. |
+| 4 | Remove apps pre-instalados (veja a lista abaixo), desinstala o aplicativo OneDrive sem apagar os arquivos sincronizados e desativa o Xbox Game DVR. |
 | 5 | Desativa Copilot (politica, botao e pacote), Recall, Click to Do, analise de dados por IA e Search Highlights. |
 | 6 | Ativa o plano Alto Desempenho, desativa a hibernacao e o Fast Startup. |
 | 7 | Reduz efeitos visuais: modo "Melhor desempenho", atraso de menus zerado, animacoes da barra de tarefas e de janelas, Aero Peek. |
@@ -60,7 +60,7 @@ Observacoes:
 
 ### Apps removidos (opcao 4)
 
-Clima, Noticias e Financas (MSN), Paciencia, Visualizador 3D, Realidade Mista, Filmes e TV, Pessoas, Skype, Clipchamp, Primeiros Passos, Teams (consumer), novo Outlook, Office Hub e os apps Xbox (TCUI, App, Game Overlay, Game Bar e Identity Provider). O Copilot e removido pela opcao 5.
+Clima, Noticias e Financas (MSN), Pesquisa do Microsoft Bing, Paciencia, Visualizador 3D, Realidade Mista, Filmes e TV, Reprodutor Multimidia, Pessoas, Skype, Clipchamp, Primeiros Passos, Teams (consumer e novo Microsoft Teams), Microsoft To Do, LinkedIn, WhatsApp, Notas Autoadesivas, Hub de Comentarios, novo Outlook, Office Hub e os apps Xbox (TCUI, App, Game Overlay, Game Bar e Identity Provider). O Copilot e removido pela opcao 5. O aplicativo OneDrive tambem e desinstalado pela opcao 4; os arquivos locais/sincronizados nao sao apagados.
 
 Alem de remover o app do usuario atual, o script tambem remove o pacote pre-instalado, para que ele nao volte em novos perfis nem apos atualizacoes.
 
