@@ -120,7 +120,7 @@ echo  Servicos
 echo --------------------------------------------------------
 call :svc DiagTrack "DiagTrack - telemetria"
 call :svc dmwappushsvc "dmwappushsvc - nao use em PC gerenciado por MDM/Intune"
-call :svc SysMain "SysMain - Superfetch, prejudica HDD"
+REM call :svc SysMain "SysMain - Superfetch, prejudica HDD"
 call :svc XblAuthManager "XblAuthManager - Xbox"
 call :svc XblGameSave "XblGameSave - Xbox"
 call :svc XboxNetApiSvc "XboxNetApiSvc - Xbox"
@@ -326,9 +326,9 @@ call :reg "HKLM\SOFTWARE\Policies\Microsoft\Windows\CloudContent" DisableWindows
 call :endstep "Apps promovidos reinstalados automaticamente"
 call :reg "HKLM\SOFTWARE\Policies\Microsoft\Windows\Explorer" HideRecommendedSection REG_DWORD 1
 call :endstep "Secao Recomendados - so em algumas edicoes"
-call :reg "HKCU\Software\Microsoft\Windows\CurrentVersion\Search" BingSearchEnabled REG_DWORD 0
-call :reg "HKCU\Software\Policies\Microsoft\Windows\Explorer" DisableSearchBoxSuggestions REG_DWORD 1
-call :endstep "Resultados da web na busca"
+REM call :reg "HKCU\Software\Microsoft\Windows\CurrentVersion\Search" BingSearchEnabled REG_DWORD 0
+REM call :reg "HKCU\Software\Policies\Microsoft\Windows\Explorer" DisableSearchBoxSuggestions REG_DWORD 1
+REM call :endstep "Resultados da web na busca"
 goto :action_done
 
 :: ============================================================
