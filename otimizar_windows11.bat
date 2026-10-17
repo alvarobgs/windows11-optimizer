@@ -201,10 +201,10 @@ call :appx Microsoft.XboxApp "Xbox App"
 call :appx Microsoft.XboxGameOverlay "Xbox Game Overlay"
 call :appx Microsoft.XboxGamingOverlay "Xbox Game Bar"
 call :appx Microsoft.XboxIdentityProvider "Xbox Identity Provider"
-call :onedrive
 call :reg "HKCU\Software\Microsoft\Windows\CurrentVersion\GameDVR" AppCaptureEnabled REG_DWORD 0
 call :reg "HKLM\SOFTWARE\Policies\Microsoft\Windows\GameDVR" AllowGameDVR REG_DWORD 0
 call :endstep "Xbox Game DVR"
+call :onedrive
 goto :action_done
 
 :: ============================================================
@@ -521,7 +521,7 @@ exit /b 0
 
 :onedrive
 >>"%LOG%" echo [OneDrive] Aplicativo de sincronizacao
-powershell -NoProfile -Command "$ErrorActionPreference='Stop'; $paths=@(($env:SystemRoot+'\SysWOW64\OneDriveSetup.exe'), ($env:SystemRoot+'\System32\OneDriveSetup.exe'), ($env:LOCALAPPDATA+'\Microsoft\OneDrive\Update\OneDriveSetup.exe'), ($env:LOCALAPPDATA+'\Microsoft\OneDrive\OneDriveSetup.exe')); $setup=$paths | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1; if (-not $setup) { exit 2 }; $p=Start-Process -FilePath $setup -ArgumentList '/uninstall' -Wait -PassThru; exit $p.ExitCode" >>"%LOG%" 2>&1
+powershell -NoProfile -Command "$ErrorActionPreference='Stop'; $paths=@(($env:SystemRoot+'\SysWOW64\OneDriveSetup.exe'), ($env:SystemRoot+'\System32\OneDriveSetup.exe'), ($env:LOCALAPPDATA+'\Microsoft\OneDrive\Update\OneDriveSetup.exe'), ($env:LOCALAPPDATA+'\Microsoft\OneDrive\OneDriveSetup.exe')); $setup=$paths | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1; if (-not $setup) { exit 2 }; Get-Process OneDrive -ErrorAction SilentlyContinue | Stop-Process -Force; Start-Sleep -Seconds 2; Start-Process -FilePath $setup -ArgumentList '/uninstall' -WindowStyle Hidden; Start-Sleep -Seconds 5; $t=0; while ((Get-Process OneDriveSetup -ErrorAction SilentlyContinue) -and $t -lt 60) { Start-Sleep -Seconds 2; $t+=2 }; exit 0" <nul >>"%LOG%" 2>&1
 set "onedriveResult=!errorlevel!"
 if "!onedriveResult!"=="2" (
     echo  OneDrive ... instalador nao encontrado, ignorado
