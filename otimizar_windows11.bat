@@ -502,36 +502,38 @@ exit /b 0
 
 :appx
 >>"%LOG%" echo [APPX] %~1
-powershell -NoProfile -Command "$ErrorActionPreference='Stop'; $n='%~1'; $p=@(Get-AppxPackage -AllUsers -Name $n); $v=@(Get-AppxProvisionedPackage -Online | Where-Object { $_.DisplayName -eq $n -or $_.PackageName -like ($n+'_*') }); if (($p.Count + $v.Count) -eq 0) { exit 2 }; foreach ($a in $p) { Remove-AppxPackage -Package $a.PackageFullName -AllUsers -ErrorAction Stop }; foreach ($a in $v) { Remove-AppxProvisionedPackage -Online -PackageName $a.PackageName -ErrorAction Stop | Out-Null }; $remaining=@(Get-AppxPackage -AllUsers -Name $n); $provisioned=@(Get-AppxProvisionedPackage -Online | Where-Object { $_.DisplayName -eq $n -or $_.PackageName -like ($n+'_*') }); if (($remaining.Count + $provisioned.Count) -gt 0) { throw ('Pacote ainda presente apos a remocao: '+$n) }" >>"%LOG%" 2>&1
-if errorlevel 2 goto :appx_missing
-if errorlevel 1 goto :appx_fail
-echo  %~2 ... removido e verificado
->>"%LOG%" echo   -^> removido e verificado
-exit /b 0
-:appx_missing
-echo  %~2 ... nao instalado, ignorado
->>"%LOG%" echo   -^> nao instalado, ignorado
-exit /b 0
-:appx_fail
-echo  %~2 ... FALHOU
->>"%LOG%" echo   -^> FALHOU
+powershell -NoProfile -Command "$ErrorActionPreference='Stop'; $n='%~1'; $failed=$false; $p=@(Get-AppxPackage -AllUsers -Name $n | Select-Object -ExpandProperty PackageFullName -Unique); $v=@(Get-AppxProvisionedPackage -Online | Where-Object { $_.DisplayName -eq $n -or $_.PackageName -like ($n+'_*') } | Select-Object -ExpandProperty PackageName -Unique); if (($p.Count + $v.Count) -eq 0) { exit 2 }; foreach ($full in $p) { try { Remove-AppxPackage -Package $full -AllUsers -ErrorAction Stop } catch { $left=@(Get-AppxPackage -AllUsers -Name $n | Where-Object PackageFullName -eq $full); if ($left.Count) { [Console]::Error.WriteLine('Falha ao remover pacote instalado '+$full+': '+$_.Exception.Message); $failed=$true } } }; foreach ($name in $v) { try { Remove-AppxProvisionedPackage -Online -PackageName $name -ErrorAction Stop | Out-Null } catch { $left=@(Get-AppxProvisionedPackage -Online | Where-Object PackageName -eq $name); if ($left.Count) { [Console]::Error.WriteLine('Falha ao remover provisionamento '+$name+': '+$_.Exception.Message); $failed=$true } } }; $remaining=@(Get-AppxPackage -AllUsers -Name $n); $provisioned=@(Get-AppxProvisionedPackage -Online | Where-Object { $_.DisplayName -eq $n -or $_.PackageName -like ($n+'_*') }); if (($remaining.Count + $provisioned.Count) -gt 0) { [Console]::Error.WriteLine('Pacote ainda presente apos a remocao: '+$n); $failed=$true }; if ($failed) { exit 1 }" >>"%LOG%" 2>&1
+set "appxResult=!errorlevel!"
+if "!appxResult!"=="2" (
+    echo  %~2 ... nao instalado, ignorado
+    >>"%LOG%" echo   -^> nao instalado, ignorado
+    exit /b 0
+)
+if "!appxResult!"=="0" (
+    echo  %~2 ... removido e verificado
+    >>"%LOG%" echo   -^> removido e verificado
+    exit /b 0
+)
+echo  %~2 ... FALHOU ^(codigo !appxResult!^)
+>>"%LOG%" echo   -^> FALHOU, codigo !appxResult!
 set "actionFailed=1"
 exit /b 0
 
 :onedrive
 >>"%LOG%" echo [OneDrive] Aplicativo de sincronizacao
 powershell -NoProfile -Command "$ErrorActionPreference='Stop'; $paths=@(($env:SystemRoot+'\SysWOW64\OneDriveSetup.exe'), ($env:SystemRoot+'\System32\OneDriveSetup.exe'), ($env:LOCALAPPDATA+'\Microsoft\OneDrive\Update\OneDriveSetup.exe'), ($env:LOCALAPPDATA+'\Microsoft\OneDrive\OneDriveSetup.exe')); $setup=$paths | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1; if (-not $setup) { exit 2 }; $p=Start-Process -FilePath $setup -ArgumentList '/uninstall' -Wait -PassThru; exit $p.ExitCode" >>"%LOG%" 2>&1
-if errorlevel 2 goto :onedrive_missing
-if errorlevel 1 goto :onedrive_fail
-echo  OneDrive (aplicativo; arquivos mantidos) ... removido
->>"%LOG%" echo   -^> removido
-exit /b 0
-:onedrive_missing
-echo  OneDrive ... instalador nao encontrado, ignorado
->>"%LOG%" echo   -^> instalador nao encontrado, ignorado
-exit /b 0
-:onedrive_fail
-echo  OneDrive ... FALHOU
->>"%LOG%" echo   -^> FALHOU
+set "onedriveResult=!errorlevel!"
+if "!onedriveResult!"=="2" (
+    echo  OneDrive ... instalador nao encontrado, ignorado
+    >>"%LOG%" echo   -^> instalador nao encontrado, ignorado
+    exit /b 0
+)
+if "!onedriveResult!"=="0" (
+    echo  OneDrive (aplicativo; arquivos mantidos) ... removido
+    >>"%LOG%" echo   -^> removido
+    exit /b 0
+)
+echo  OneDrive ... FALHOU ^(codigo !onedriveResult!^)
+>>"%LOG%" echo   -^> FALHOU, codigo !onedriveResult!
 set "actionFailed=1"
 exit /b 0
