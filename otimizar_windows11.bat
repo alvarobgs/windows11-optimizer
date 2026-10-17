@@ -529,7 +529,7 @@ if "!onedriveResult!"=="2" (
     exit /b 0
 )
 if "!onedriveResult!"=="0" (
-    echo  OneDrive (aplicativo; arquivos mantidos) ... removido
+    echo  OneDrive - aplicativo, arquivos mantidos ... removido
     >>"%LOG%" echo   -^> removido
     exit /b 0
 )
