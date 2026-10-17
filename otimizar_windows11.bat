@@ -17,6 +17,25 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
+:: Garantir que a conta elevada e a mesma da sessao interativa
+powershell -NoProfile -Command "$ErrorActionPreference='Stop'; try { $sid=[System.Diagnostics.Process]::GetCurrentProcess().SessionId; $me=[System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value; $shells=@(Get-CimInstance Win32_Process | Where-Object { $_.Name -eq 'explorer.exe' -and $_.SessionId -eq $sid }); if (-not $shells) { exit 2 }; $users=@($shells | ForEach-Object { (Invoke-CimMethod -InputObject $_ -MethodName GetOwnerSid).Sid } | Where-Object { $_ }); if (-not $users) { exit 2 }; if ($users -contains $me) { exit 0 }; exit 1 } catch { [Console]::Error.WriteLine($_); exit 2 }" >nul 2>>"%LOG%"
+if errorlevel 2 (
+    echo.
+    echo  [ERRO] Nao foi possivel confirmar a conta da sessao do Windows.
+    echo  Inicie o script pela sua sessao interativa como administrador.
+    >>"%LOG%" echo [ERRO] Falha ao identificar a conta da sessao interativa.
+    pause
+    exit /b 1
+)
+if errorlevel 1 (
+    echo.
+    echo  [ERRO] O script foi elevado com uma conta diferente da conta conectada.
+    echo  Feche-o e execute novamente usando a sua propria conta no aviso do UAC.
+    >>"%LOG%" echo [ERRO] Conta elevada diferente da conta da sessao interativa.
+    pause
+    exit /b 1
+)
+
 >>"%LOG%" echo.
 >>"%LOG%" echo ##### Execucao iniciada em %date% %time% #####
 >>"%LOG%" echo Usuario: %USERNAME%  Computador: %COMPUTERNAME%  Arquitetura: %PROCESSOR_ARCHITECTURE%
@@ -483,11 +502,11 @@ exit /b 0
 
 :appx
 >>"%LOG%" echo [APPX] %~1
-powershell -NoProfile -Command "$ErrorActionPreference='Stop'; $n='%~1'; $f=0; $p=@(Get-AppxPackage -Name $n); if ($p.Count) { $p | Remove-AppxPackage -ErrorAction Stop; $f=1 }; $v=@(Get-AppxProvisionedPackage -Online | Where-Object DisplayName -eq $n); if ($v.Count) { $v | Remove-AppxProvisionedPackage -Online -ErrorAction Stop | Out-Null; $f=1 }; if ($f -eq 0) { exit 2 }" >>"%LOG%" 2>&1
+powershell -NoProfile -Command "$ErrorActionPreference='Stop'; $n='%~1'; $p=@(Get-AppxPackage -AllUsers -Name $n); $v=@(Get-AppxProvisionedPackage -Online | Where-Object { $_.DisplayName -eq $n -or $_.PackageName -like ($n+'_*') }); if (($p.Count + $v.Count) -eq 0) { exit 2 }; foreach ($a in $p) { Remove-AppxPackage -Package $a.PackageFullName -AllUsers -ErrorAction Stop }; foreach ($a in $v) { Remove-AppxProvisionedPackage -Online -PackageName $a.PackageName -ErrorAction Stop | Out-Null }; $remaining=@(Get-AppxPackage -AllUsers -Name $n); $provisioned=@(Get-AppxProvisionedPackage -Online | Where-Object { $_.DisplayName -eq $n -or $_.PackageName -like ($n+'_*') }); if (($remaining.Count + $provisioned.Count) -gt 0) { throw ('Pacote ainda presente apos a remocao: '+$n) }" >>"%LOG%" 2>&1
 if errorlevel 2 goto :appx_missing
 if errorlevel 1 goto :appx_fail
-echo  %~2 ... removido
->>"%LOG%" echo   -^> removido
+echo  %~2 ... removido e verificado
+>>"%LOG%" echo   -^> removido e verificado
 exit /b 0
 :appx_missing
 echo  %~2 ... nao instalado, ignorado

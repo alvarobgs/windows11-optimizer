@@ -12,6 +12,7 @@ Cada acao e independente. Voce escolhe pelo numero, o script mostra o resultado 
 - Windows 11 (Windows 10 parcialmente)
 - Executar como **Administrador**
 - PowerShell (ja incluido no Windows)
+- Autorizar a elevacao com a **mesma conta** da sessao do Windows. O script encerra se detectar credenciais de outra conta, para evitar aplicar configuracoes de usuario ao perfil errado.
 
 ## Como usar
 
@@ -33,6 +34,12 @@ Abra o **PowerShell como Administrador** e execute:
 $d = "$env:USERPROFILE\Otimizador"; New-Item -ItemType Directory -Force $d | Out-Null; Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/alvarobgs/windows11-optimizer/main/otimizar_windows11.bat" -OutFile "$d\otimizar_windows11.bat"; cmd /c "$d\otimizar_windows11.bat"
 ```
 
+Para apenas baixar o arquivo pelo terminal, sem executa-lo, abra o PowerShell e rode:
+
+```powershell
+$desktop = [Environment]::GetFolderPath('Desktop'); Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/alvarobgs/windows11-optimizer/main/otimizar_windows11.bat" -OutFile (Join-Path $desktop "windows11-optimizer.bat")
+```
+
 Observacoes:
 
 - O PowerShell precisa estar **elevado**, senao o script exibe o erro de administrador.
@@ -46,7 +53,7 @@ Observacoes:
 | 1 | Cria um ponto de restauracao do sistema (contorna o limite de 1 por 24 horas). |
 | 2 | Desativa servicos: DiagTrack, dmwappushsvc, SysMain, Xbox (XblAuthManager, XblGameSave, XboxNetApiSvc, XboxGipSvc), Fax, WerSvc, RemoteRegistry e lfsvc (localizacao). |
 | 3 | Reduz telemetria (politica `AllowTelemetry`), ID de publicidade, experiencias personalizadas, historico de atividades e notificacoes de feedback. Desativa tarefas agendadas do Compatibility Appraiser, ProgramDataUpdater e CEIP. |
-| 4 | Remove apps pre-instalados (veja a lista abaixo), desinstala o aplicativo OneDrive sem apagar os arquivos sincronizados e desativa o Xbox Game DVR. |
+| 4 | Remove apps pre-instalados de todos os perfis existentes (veja a lista abaixo) e do provisionamento para novos perfis, desinstala o aplicativo OneDrive sem apagar os arquivos sincronizados e desativa o Xbox Game DVR. |
 | 5 | Desativa Copilot (politica, botao e pacote), Recall, Click to Do, analise de dados por IA e Search Highlights. |
 | 6 | Ativa o plano Alto Desempenho, desativa a hibernacao e o Fast Startup. |
 | 7 | Reduz efeitos visuais: modo "Melhor desempenho", atraso de menus zerado, animacoes da barra de tarefas e de janelas, Aero Peek. |
@@ -62,7 +69,7 @@ Observacoes:
 
 Clima, Noticias e Financas (MSN), Pesquisa do Microsoft Bing, Paciencia, Visualizador 3D, Realidade Mista, Filmes e TV, Reprodutor Multimidia, Pessoas, Skype, Clipchamp, Primeiros Passos, Teams (consumer e novo Microsoft Teams), Microsoft To Do, LinkedIn, WhatsApp, Notas Autoadesivas, Hub de Comentarios, novo Outlook, Office Hub e os apps Xbox (TCUI, App, Game Overlay, Game Bar e Identity Provider). O Copilot e removido pela opcao 5. O aplicativo OneDrive tambem e desinstalado pela opcao 4; os arquivos locais/sincronizados nao sao apagados.
 
-Alem de remover o app do usuario atual, o script tambem remove o pacote pre-instalado, para que ele nao volte em novos perfis nem apos atualizacoes.
+O script remove os pacotes Appx de todos os perfis existentes e tambem o provisionamento para novos perfis. A remocao e verificada antes de ser informada como concluida; se um pacote continuar presente ou o Windows bloquear a remocao, a opcao registra falha no log.
 
 ## Resultado e log
 
@@ -72,7 +79,7 @@ Alem de remover o app do usuario atual, o script tambem remove o pacote pre-inst
 
 ## Pontos de atencao
 
-- **Contas:** as configuracoes de usuario (visuais, barra de tarefas, apps em segundo plano) valem apenas para a conta que executa o script. O cabecalho do menu mostra qual e.
+- **Contas:** autorize o UAC com a mesma conta conectada ao Windows. O script verifica se a conta elevada corresponde ao usuario da sessao grafica e encerra se forem diferentes. Assim, configuracoes HKCU, apps em segundo plano e OneDrive nao sao aplicados ao perfil de outro administrador. A remocao Appx da opcao 4 continua abrangendo todos os perfis existentes e o provisionamento para novos perfis.
 - **Xbox:** remover os apps e servicos Xbox pode quebrar o login em jogos da Microsoft Store e o Game Pass.
 - **Notebook:** o plano Alto Desempenho e a hibernacao desativada (opcao 6) aumentam o consumo de bateria. Em HD, desativar o SysMain pode piorar o desempenho.
 - **MDM/Intune:** nao use a opcao 2 em PCs gerenciados, pois ela desativa o `dmwappushsvc`.
