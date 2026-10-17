@@ -84,7 +84,7 @@ if "!opcao!"=="10" goto :permissoes
 if "!opcao!"=="11" goto :apps_bg
 if "!opcao!"=="12" goto :limpeza
 if "!opcao!"=="13" goto :reiniciar
-if "!opcao!"=="0" exit /b 0
+if "!opcao!"=="0" goto :sair
 echo.
 echo  Opcao invalida. Tente novamente.
 pause
@@ -174,33 +174,43 @@ echo.
 echo --------------------------------------------------------
 echo  Aplicativos pre-instalados e Game DVR
 echo --------------------------------------------------------
-call :appx Microsoft.BingWeather "MSN Clima"
-call :appx Microsoft.BingNews "MSN Noticias"
-call :appx Microsoft.BingFinance "MSN Financas"
-call :appx Microsoft.MicrosoftSolitaireCollection "Paciencia"
-call :appx Microsoft.Microsoft3DViewer "Visualizador 3D"
-call :appx Microsoft.MixedReality.Portal "Realidade Mista"
-call :appx Microsoft.ZuneVideo "Filmes e TV"
-call :appx Microsoft.People "Pessoas"
-call :appx Microsoft.SkypeApp "Skype"
-call :appx Clipchamp.Clipchamp "Clipchamp"
-call :appx Microsoft.Getstarted "Primeiros Passos"
-call :appx MicrosoftTeams "Teams consumer (legado)"
-call :appx MSTeams "Microsoft Teams"
-call :appx Microsoft.Todos "Microsoft To Do"
-call :appx 7EE7776C.LinkedInforWindows "LinkedIn"
-call :appx 5319275A.WhatsAppDesktop "WhatsApp"
-call :appx Microsoft.BingSearch "Pesquisa do Microsoft Bing"
-call :appx Microsoft.MicrosoftStickyNotes "Notas Autoadesivas"
-call :appx Microsoft.WindowsFeedbackHub "Hub de Comentarios"
-call :appx Microsoft.ZuneMusic "Reprodutor Multimidia"
-call :appx Microsoft.OutlookForWindows "Novo Outlook"
-call :appx Microsoft.MicrosoftOfficeHub "Office Hub"
-call :appx Microsoft.Xbox.TCUI "Xbox TCUI"
-call :appx Microsoft.XboxApp "Xbox App"
-call :appx Microsoft.XboxGameOverlay "Xbox Game Overlay"
-call :appx Microsoft.XboxGamingOverlay "Xbox Game Bar"
-call :appx Microsoft.XboxIdentityProvider "Xbox Identity Provider"
+set "appxOutput=%TEMP%\otim_appx_result.txt"
+if exist "!appxOutput!" del /q "!appxOutput!" >nul 2>&1
+set "appxB64=%TEMP%\otim_appx_script.b64"
+set "appxScript=%TEMP%\otim_appx_script.ps1"
+if exist "!appxB64!" del /q "!appxB64!" >nul 2>&1
+>"!appxB64!" echo JEVycm9yQWN0aW9uUHJlZmVyZW5jZT0nU3RvcCcKJGFwcHMgPSBAKAogIEB7TmFtZT0nTWljcm9zb2Z0LkJpbmdXZWF0aGVyJzsgTGFiZWw9J01TTiBDbGltYSd9LAogIEB7TmFtZT0nTWljcm9zb2Z0LkJpbmdOZXdzJzsgTGFiZWw9J01TTiBOb3RpY2lhcyd9LAogIEB7TmFtZT0nTWljcm9zb2Z0Lk5ld3MnOyBMYWJlbD0nTWljcm9zb2Z0IE5vdGljaWFzIC0gYWxpYXMsIHNlIGluc3RhbGFkbyd9LAogIEB7TmFtZT0nTWljcm9zb2Z0LkJpbmdGaW5hbmNlJzsgTGFiZWw9J01TTiBGaW5hbmNhcyd9LAogIEB7TmFtZT0nTWljcm9zb2Z0Lk1pY3Jvc29mdFNvbGl0YWlyZUNvbGxlY3Rpb24nOyBMYWJlbD0nUGFjaWVuY2lhJ30sCiAgQHtOYW1lPSdNaWNyb3NvZnQuTWljcm9zb2Z0M0RWaWV3ZXInOyBMYWJlbD0nVmlzdWFsaXphZG9yIDNEJ30sCiAgQHtOYW1lPSdNaWNyb3NvZnQuTWl4ZWRSZWFsaXR5LlBvcnRhbCc7IExhYmVsPSdSZWFsaWRhZGUgTWlzdGEnfSwKICBAe05hbWU9J01pY3Jvc29mdC5adW5lVmlkZW8nOyBMYWJlbD0nRmlsbWVzIGUgVFYnfSwKICBAe05hbWU9J01pY3Jvc29mdC5QZW9wbGUnOyBMYWJlbD0nUGVzc29hcyd9LAogIEB7TmFtZT0nTWljcm9zb2Z0LlNreXBlQXBwJzsgTGFiZWw9J1NreXBlJ30sCiAgQHtOYW1lPSdDbGlwY2hhbXAuQ2xpcGNoYW1wJzsgTGFiZWw9J0NsaXBjaGFtcCd9LAogIEB7TmFtZT0nTWljcm9zb2Z0LkdldHN0YXJ0ZWQnOyBMYWJlbD0nUHJpbWVpcm9zIFBhc3Nvcyd9LAogIEB7TmFtZT0nTWljcm9zb2Z0VGVhbXMnOyBMYWJlbD0nVGVhbXMgY29uc3VtZXIgLSBsZWdhZG8nfSwKICBAe05hbWU9J01TVGVhbXMnOyBMYWJlbD0nTWljcm9zb2Z0IFRlYW1zJ30sCiAgQHtOYW1lPSdNaWNyb3NvZnQuVG9kb3MnOyBMYWJlbD0nTWljcm9zb2Z0IFRvIERvJ30sCiAgQHtOYW1lPSc3RUU3Nzc2Qy5MaW5rZWRJbmZvcldpbmRvd3MnOyBMYWJlbD0nTGlua2VkSW4nfSwKICBAe05hbWU9JzUzMTkyNzVBLldoYXRzQXBwRGVza3RvcCc7IExhYmVsPSdXaGF0c0FwcCd9LAogIEB7TmFtZT0nTWljcm9zb2Z0LkJpbmdTZWFyY2gnOyBMYWJlbD0nUGVzcXVpc2EgZG8gTWljcm9zb2Z0IEJpbmcnfSwKICBAe05hbWU9J01pY3Jvc29mdC5NaWNyb3NvZnRTdGlja3lOb3Rlcyc7IExhYmVsPSdOb3RhcyBBdXRvYWRlc2l2YXMnfSwKICBAe05hbWU9J01pY3Jvc29mdC5XaW5kb3dzRmVlZGJhY2tIdWInOyBMYWJlbD0nSHViIGRlIENvbWVudGFyaW9zJ30sCiAgQHtOYW1lPSdNaWNyb3NvZnQuWnVuZU11c2ljJzsgTGFiZWw9J1JlcHJvZHV0b3IgTXVsdGltaWRpYSd9LAogIEB7TmFtZT0nTW
+>>"!appxB64!" echo ljcm9zb2Z0Lk91dGxvb2tGb3JXaW5kb3dzJzsgTGFiZWw9J05vdm8gT3V0bG9vayd9LAogIEB7TmFtZT0nTWljcm9zb2Z0Lk1pY3Jvc29mdE9mZmljZUh1Yic7IExhYmVsPSdPZmZpY2UgSHViJ30sCiAgQHtOYW1lPSdNaWNyb3NvZnQuQ29waWxvdCc7IExhYmVsPSdNaWNyb3NvZnQgQ29waWxvdCd9LAogIEB7TmFtZT0nTWljcm9zb2Z0LkdhbWluZ0FwcCc7IExhYmVsPSdYYm94IGFwcCAoTWljcm9zb2Z0IEdhbWluZ0FwcCknfSwKICBAe05hbWU9J01pY3Jvc29mdC5YYm94LlRDVUknOyBMYWJlbD0nWGJveCBUQ1VJJ30sCiAgQHtOYW1lPSdNaWNyb3NvZnQuWGJveEFwcCc7IExhYmVsPSdYYm94IEFwcCd9LAogIEB7TmFtZT0nTWljcm9zb2Z0Llhib3hHYW1lT3ZlcmxheSc7IExhYmVsPSdYYm94IEdhbWUgT3ZlcmxheSd9LAogIEB7TmFtZT0nTWljcm9zb2Z0Llhib3hHYW1pbmdPdmVybGF5JzsgTGFiZWw9J1hib3ggR2FtZSBCYXInfSwKICBAe05hbWU9J01pY3Jvc29mdC5YYm94SWRlbnRpdHlQcm92aWRlcic7IExhYmVsPSdYYm94IElkZW50aXR5IFByb3ZpZGVyJ30KKQokZmFpbGVkID0gJGZhbHNlCmZvcmVhY2ggKCRhcHAgaW4gJGFwcHMpIHsKICAkbiA9ICRhcHAuTmFtZQogICRsYWJlbCA9ICRhcHAuTGFiZWwKICBXcml0ZS1PdXRwdXQgKCJbQVBQWF0gIiArICRuKQogIHRyeSB7CiAgICAkaW5zdGFsbGVkID0gQChHZXQtQXBweFBhY2thZ2UgLUFsbFVzZXJzIC1OYW1lICRuIC1FcnJvckFjdGlvbiBTdG9wIHwgU2VsZWN0LU9iamVjdCAtRXhwYW5kUHJvcGVydHkgUGFja2FnZUZ1bGxOYW1lIC1VbmlxdWUpCiAgICAkcHJvdmlzaW9uZWQgPSBAKEdldC1BcHB4UHJvdmlzaW9uZWRQYWNrYWdlIC1PbmxpbmUgLUVycm9yQWN0aW9uIFN0b3AgfCBXaGVyZS1PYmplY3QgeyAkXy5EaXNwbGF5TmFtZSAtZXEgJG4gLW9yICRfLlBhY2thZ2VOYW1lIC1saWtlICgkbiArICdfKicpIH0gfCBTZWxlY3QtT2JqZWN0IC1FeHBhbmRQcm9wZXJ0eSBQYWNrYWdlTmFtZSAtVW5pcXVlKQogIH0gY2F0Y2ggewogICAgW0NvbnNvbGVdOjpFcnJvci5Xcml0ZUxpbmUoIkZhbGhhIGFvIGNvbnN1bHRhciAkbiA6ICQoJF8uRXhjZXB0aW9uLk1lc3NhZ2UpIikKICAgIFdyaXRlLU91dHB1dCAoIiAgIiArICRsYWJlbCArICIgLi4uIEZBTEhPVSBuYSBjb25zdWx0YSIpCiAgICAkZmFpbGVkID0gJHRydWUKICAgIGNvbnRpbnVlCiAgfQogIGlmICgoJGluc3RhbGxlZC5Db3VudCArICRwcm92aXNpb25lZC5Db3VudCkgLWVxIDApIHsKICAgIFdyaXRlLU91dHB1dCAoIiAgIiArICRsYWJlbCArICIgLi4uIG5hbyBpbnN0YWxhZG8sIGln
+>>"!appxB64!" echo bm9yYWRvIikKICAgIGNvbnRpbnVlCiAgfQogIGZvcmVhY2ggKCRmdWxsIGluICRpbnN0YWxsZWQpIHsKICAgIHRyeSB7IFJlbW92ZS1BcHB4UGFja2FnZSAtUGFja2FnZSAkZnVsbCAtQWxsVXNlcnMgLUVycm9yQWN0aW9uIFN0b3AgfQogICAgY2F0Y2ggewogICAgICAkbGVmdCA9IEAoR2V0LUFwcHhQYWNrYWdlIC1BbGxVc2VycyAtTmFtZSAkbiAtRXJyb3JBY3Rpb24gU2lsZW50bHlDb250aW51ZSB8IFdoZXJlLU9iamVjdCBQYWNrYWdlRnVsbE5hbWUgLWVxICRmdWxsKQogICAgICBpZiAoJGxlZnQuQ291bnQpIHsgW0NvbnNvbGVdOjpFcnJvci5Xcml0ZUxpbmUoIkZhbGhhIGFvIHJlbW92ZXIgcGFjb3RlIGluc3RhbGFkbyAkZnVsbCA6ICQoJF8uRXhjZXB0aW9uLk1lc3NhZ2UpIik7ICRmYWlsZWQgPSAkdHJ1ZSB9CiAgICB9CiAgfQogIGZvcmVhY2ggKCRuYW1lIGluICRwcm92aXNpb25lZCkgewogICAgdHJ5IHsgUmVtb3ZlLUFwcHhQcm92aXNpb25lZFBhY2thZ2UgLU9ubGluZSAtUGFja2FnZU5hbWUgJG5hbWUgLUVycm9yQWN0aW9uIFN0b3AgfCBPdXQtTnVsbCB9CiAgICBjYXRjaCB7CiAgICAgICRsZWZ0ID0gQChHZXQtQXBweFByb3Zpc2lvbmVkUGFja2FnZSAtT25saW5lIC1FcnJvckFjdGlvbiBTaWxlbnRseUNvbnRpbnVlIHwgV2hlcmUtT2JqZWN0IFBhY2thZ2VOYW1lIC1lcSAkbmFtZSkKICAgICAgaWYgKCRsZWZ0LkNvdW50KSB7IFtDb25zb2xlXTo6RXJyb3IuV3JpdGVMaW5lKCJGYWxoYSBhbyByZW1vdmVyIHByb3Zpc2lvbmFtZW50byAkbmFtZSA6ICQoJF8uRXhjZXB0aW9uLk1lc3NhZ2UpIik7ICRmYWlsZWQgPSAkdHJ1ZSB9CiAgICB9CiAgfQogICRyZW1haW5pbmcgPSBAKEdldC1BcHB4UGFja2FnZSAtQWxsVXNlcnMgLU5hbWUgJG4gLUVycm9yQWN0aW9uIFNpbGVudGx5Q29udGludWUpCiAgJHN0aWxsUHJvdmlzaW9uZWQgPSBAKEdldC1BcHB4UHJvdmlzaW9uZWRQYWNrYWdlIC1PbmxpbmUgLUVycm9yQWN0aW9uIFNpbGVudGx5Q29udGludWUgfCBXaGVyZS1PYmplY3QgeyAkXy5EaXNwbGF5TmFtZSAtZXEgJG4gLW9yICRfLlBhY2thZ2VOYW1lIC1saWtlICgkbiArICdfKicpIH0pCiAgaWYgKCgkcmVtYWluaW5nLkNvdW50ICsgJHN0aWxsUHJvdmlzaW9uZWQuQ291bnQpIC1ndCAwKSB7CiAgICBbQ29uc29sZV06OkVycm9yLldyaXRlTGluZSgiUGFjb3RlIGFpbmRhIHByZXNlbnRlIGFwb3MgYSByZW1vY2FvOiAkbiIpCiAgICBXcml0ZS1PdXRwdXQgKCIgICIgKyAkbGFiZWwgKyAiIC4uLiBGQUxIT1UsIHBhY290ZSBhaW5kYSBwcmVzZW50ZSIpCiAgICAkZmFpbGVkID0gJHRydWUKIC
+>>"!appxB64!" echo B9IGVsc2UgewogICAgV3JpdGUtT3V0cHV0ICgiICAiICsgJGxhYmVsICsgIiAuLi4gcmVtb3ZpZG8gZSB2ZXJpZmljYWRvIikKICB9Cn0KaWYgKCRmYWlsZWQpIHsgZXhpdCAxIH0KZXhpdCAwCg==
+certutil.exe -f -decode "!appxB64!" "!appxScript!" >nul 2>&1
+if errorlevel 1 (
+    echo  FALHA: nao foi possivel preparar a rotina de remocao de aplicativos.
+    >>"%LOG%" echo [APPX] FALHA: nao foi possivel decodificar o script PowerShell.
+    set "actionFailed=1"
+) else (
+    set "appxOutput=%TEMP%\otim_appx_result.txt"
+    if exist "!appxOutput!" del /q "!appxOutput!" >nul 2>&1
+    powershell.exe -NoProfile -ExecutionPolicy Bypass -File "!appxScript!" >"!appxOutput!" 2>>"%LOG%"
+    if errorlevel 1 set "actionFailed=1"
+    if exist "!appxOutput!" (
+        type "!appxOutput!"
+        type "!appxOutput!" >>"%LOG%"
+    ) else (
+        echo  FALHA: nao foi possivel obter o resultado da remocao de aplicativos.
+        >>"%LOG%" echo [APPX] FALHA: arquivo de resultado nao criado.
+        set "actionFailed=1"
+    )
+)
+if errorlevel 1 set "actionFailed=1"
+if exist "!appxOutput!" (
+    type "!appxOutput!"
+    type "!appxOutput!" >>"%LOG%"
+) else (
+    echo  FALHA: nao foi possivel obter o resultado da remocao de aplicativos.
+    >>"%LOG%" echo [APPX] FALHA: arquivo de resultado nao criado.
+    set "actionFailed=1"
+)
 call :reg "HKCU\Software\Microsoft\Windows\CurrentVersion\GameDVR" AppCaptureEnabled REG_DWORD 0
 call :reg "HKLM\SOFTWARE\Policies\Microsoft\Windows\GameDVR" AllowGameDVR REG_DWORD 0
 call :endstep "Xbox Game DVR"
@@ -247,11 +257,11 @@ echo.
 echo --------------------------------------------------------
 echo  Plano de energia
 echo --------------------------------------------------------
-powercfg /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c >>"%LOG%" 2>&1
+:: Usar o alias oficial evita tentar duplicar um plano com o mesmo GUID.
+powercfg /setactive SCHEME_MAX >>"%LOG%" 2>&1
 if errorlevel 1 (
-    powercfg /duplicatescheme 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c >>"%LOG%" 2>&1
-    powercfg /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c >>"%LOG%" 2>&1
-    if errorlevel 1 set "stepFailed=1"
+    >>"%LOG%" echo [AVISO] O plano Alto Desempenho nao esta disponivel ou nao pode ser ativado.
+    set "stepFailed=1"
 )
 call :endstep "Plano Alto Desempenho"
 powercfg /hibernate off >>"%LOG%" 2>&1
@@ -423,7 +433,9 @@ if "!actionFailed!"=="0" (
 )
 echo  Algumas mudancas so valem apos reiniciar ou sair e entrar na conta.
 echo.
-pause
+echo  Pressione qualquer tecla para voltar ao menu.
+echo  IMPORTANTE: para sair, digite 0 somente quando o menu pedir uma opcao.
+pause >nul
 goto :menu
 
 :: ============================================================
@@ -501,27 +513,29 @@ set "actionFailed=1"
 exit /b 0
 
 :appx
+set "appxLabel=%~2"
 >>"%LOG%" echo [APPX] %~1
 powershell -NoProfile -Command "$ErrorActionPreference='Stop'; $n='%~1'; $failed=$false; $p=@(Get-AppxPackage -AllUsers -Name $n | Select-Object -ExpandProperty PackageFullName -Unique); $v=@(Get-AppxProvisionedPackage -Online | Where-Object { $_.DisplayName -eq $n -or $_.PackageName -like ($n+'_*') } | Select-Object -ExpandProperty PackageName -Unique); if (($p.Count + $v.Count) -eq 0) { exit 2 }; foreach ($full in $p) { try { Remove-AppxPackage -Package $full -AllUsers -ErrorAction Stop } catch { $left=@(Get-AppxPackage -AllUsers -Name $n | Where-Object PackageFullName -eq $full); if ($left.Count) { [Console]::Error.WriteLine('Falha ao remover pacote instalado '+$full+': '+$_.Exception.Message); $failed=$true } } }; foreach ($name in $v) { try { Remove-AppxProvisionedPackage -Online -PackageName $name -ErrorAction Stop | Out-Null } catch { $left=@(Get-AppxProvisionedPackage -Online | Where-Object PackageName -eq $name); if ($left.Count) { [Console]::Error.WriteLine('Falha ao remover provisionamento '+$name+': '+$_.Exception.Message); $failed=$true } } }; $remaining=@(Get-AppxPackage -AllUsers -Name $n); $provisioned=@(Get-AppxProvisionedPackage -Online | Where-Object { $_.DisplayName -eq $n -or $_.PackageName -like ($n+'_*') }); if (($remaining.Count + $provisioned.Count) -gt 0) { [Console]::Error.WriteLine('Pacote ainda presente apos a remocao: '+$n); $failed=$true }; if ($failed) { exit 1 }" >>"%LOG%" 2>&1
 set "appxResult=!errorlevel!"
+>>"%LOG%" echo [APPX-RET] %~1 codigo !appxResult!
 if "!appxResult!"=="2" (
-    echo  %~2 ... nao instalado, ignorado
+    echo  !appxLabel! ... nao instalado, ignorado
     >>"%LOG%" echo   -^> nao instalado, ignorado
     exit /b 0
 )
 if "!appxResult!"=="0" (
-    echo  %~2 ... removido e verificado
+    echo  !appxLabel! ... removido e verificado
     >>"%LOG%" echo   -^> removido e verificado
     exit /b 0
 )
-echo  %~2 ... FALHOU ^(codigo !appxResult!^)
+echo  !appxLabel! ... FALHOU ^(codigo !appxResult!^)
 >>"%LOG%" echo   -^> FALHOU, codigo !appxResult!
 set "actionFailed=1"
 exit /b 0
 
 :onedrive
 >>"%LOG%" echo [OneDrive] Aplicativo de sincronizacao
-powershell -NoProfile -Command "$ErrorActionPreference='Stop'; $paths=@(($env:SystemRoot+'\SysWOW64\OneDriveSetup.exe'), ($env:SystemRoot+'\System32\OneDriveSetup.exe'), ($env:LOCALAPPDATA+'\Microsoft\OneDrive\Update\OneDriveSetup.exe'), ($env:LOCALAPPDATA+'\Microsoft\OneDrive\OneDriveSetup.exe')); $setup=$paths | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1; if (-not $setup) { exit 2 }; Get-Process OneDrive -ErrorAction SilentlyContinue | Stop-Process -Force; Start-Sleep -Seconds 2; Start-Process -FilePath $setup -ArgumentList '/uninstall' -WindowStyle Hidden; Start-Sleep -Seconds 5; $t=0; while ((Get-Process OneDriveSetup -ErrorAction SilentlyContinue) -and $t -lt 60) { Start-Sleep -Seconds 2; $t+=2 }; exit 0" <nul >>"%LOG%" 2>&1
+powershell -NoProfile -Command "$ErrorActionPreference='Stop'; $paths=@(($env:SystemRoot+'\SysWOW64\OneDriveSetup.exe'), ($env:SystemRoot+'\System32\OneDriveSetup.exe'), ($env:LOCALAPPDATA+'\Microsoft\OneDrive\Update\OneDriveSetup.exe'), ($env:LOCALAPPDATA+'\Microsoft\OneDrive\OneDriveSetup.exe')); $setup=$paths | Where-Object { Test-Path -LiteralPath $_ -PathType Leaf } | Select-Object -First 1; if (-not $setup) { Write-Output '[OneDrive] Instalador nao encontrado nos caminhos conhecidos.'; exit 2 }; Write-Output ('[OneDrive] Instalador: '+$setup); Get-Process -Name OneDrive -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue; Start-Sleep -Seconds 2; try { $proc=Start-Process -FilePath $setup -ArgumentList '/uninstall' -WindowStyle Hidden -PassThru -Wait -ErrorAction Stop; Write-Output ('[OneDrive] Codigo de saida do desinstalador: '+$proc.ExitCode); if ($proc.ExitCode -eq -2147219813) { Write-Output '[OneDrive] Codigo especial conhecido como retorno de sucesso para esta operacao.'; exit 0 }; if ($proc.ExitCode -ne 0) { [Console]::Error.WriteLine('[OneDrive] O desinstalador retornou um codigo inesperado: '+$proc.ExitCode); exit 1 } } catch { [Console]::Error.WriteLine('[OneDrive] Nao foi possivel executar/aguardar o desinstalador: '+$_.Exception.Message); exit 1 }; Start-Sleep -Seconds 3; $running=@(Get-Process -Name OneDrive -ErrorAction SilentlyContinue); if ($running.Count -gt 0) { [Console]::Error.WriteLine('[OneDrive] O processo OneDrive continua em execucao apos a desinstalacao.'); exit 1 }; exit 0" <nul >>"%LOG%" 2>&1
 set "onedriveResult=!errorlevel!"
 if "!onedriveResult!"=="2" (
     echo  OneDrive ... instalador nao encontrado, ignorado
@@ -529,11 +543,17 @@ if "!onedriveResult!"=="2" (
     exit /b 0
 )
 if "!onedriveResult!"=="0" (
-    echo  OneDrive - aplicativo, arquivos mantidos ... removido
-    >>"%LOG%" echo   -^> removido
+    echo  OneDrive - aplicativo, arquivos mantidos ... comando concluido
+    >>"%LOG%" echo   -^> comando concluido sem erro; arquivos do usuario nao foram apagados
     exit /b 0
 )
 echo  OneDrive ... FALHOU ^(codigo !onedriveResult!^)
->>"%LOG%" echo   -^> FALHOU, codigo !onedriveResult!
+>>"%LOG%" echo   -^> FALHOU, codigo !onedriveResult!; consulte as mensagens acima
 set "actionFailed=1"
+exit /b 0
+
+:sair
+echo.
+echo  Encerrando o Otimizador Windows.
+endlocal
 exit /b 0
